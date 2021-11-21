@@ -44,18 +44,14 @@ jobs:
           
       - name: Create EC2 and deploy application to EC2
         id: deploy-app
-        env:
-         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-         IMAGE_TAG: ${{ github.sha }}
-
         run: |
           sed -i 's/{{AWS_ACCESS_KEY_ID}}/${{ secrets.AWS_ACCESS_KEY_ID }}/g' script/user_data_script.txt
           sed -i 's/{{AWS_SECRET_ACCESS_KEY}}/${{ secrets.AWS_SECRET_ACCESS_KEY }}/g' script/user_data_script.txt
           sed -i 's/{{AWS_SESSION_TOKEN}}/${{ secrets.AWS_SESSION_TOKEN }}/g' script/user_data_script.txt
-          sed -i 's/{{region}}/$AWS_REGION/g' script/user_data_script.txt
-          sed -i 's/{{ECR_REGISTRY}}/${{ ECR_REGISTRY }}/g' script/user_data_script.txt
-          sed -i 's/{{ECR_REPOSITORY}}/${{ ECR_REPOSITORY }}/g' script/user_data_script.txt
-          sed -i 's/{{IMAGE_TAG}}/${{ IMAGE_TAG }}/g' script/user_data_script.txt
+          sed -i 's/{{region}}/${{ env.AWS_REGION }}/g' script/user_data_script.txt
+          sed -i 's/{{ECR_REGISTRY}}/${{ steps.login-ecr.outputs.registry }}/g' script/user_data_script.txt
+          sed -i 's/{{ECR_REPOSITORY}}/$${{ env.ECR_REPOSITORY }}/g' script/user_data_script.txt
+          sed -i 's/{{IMAGE_TAG}}/${{ github.sha }}/g' script/user_data_script.txt
           
           aws ec2 run-instances --image-id ami-04902260ca3d33422 --instance-type t2.micro  --key-name deploy --security-group-ids sg-009a6eb89dcb61f5d --user-data file://script/user_data_script.txt
           
