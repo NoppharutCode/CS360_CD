@@ -5,13 +5,6 @@ sudo yum install docker -y
 sudo service docker start
 sudo usermod -a -G docker ec2-user
 mkdir ~/.aws
-echo "[default]" >> ~/.aws/credentials
-echo "aws_access_key_id={{AWS_ACCESS_KEY_ID}}" >> ~/.aws/credentials
-echo "aws_secret_access_key={{AWS_SECRET_ACCESS_KEY}}" >> ~/.aws/credentials
-echo "aws_session_token={{AWS_SESSION_TOKEN}}">> ~/.aws/credentials
-
-echo "[default]" >> ~/.aws/config
-echo "region = {{region}}" >> ~/.aws/config
 
 aws ecr get-login-password --region {{region}} | docker login --username AWS --password-stdin 261294718390.dkr.ecr.{{region}}.amazonaws.com
 
